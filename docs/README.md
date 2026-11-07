@@ -2,7 +2,7 @@
 
 Интерактивный прототип CRM для взаимодействия зуботехнических лабораторий, стоматологических клиник и зубных техников. Сделан по техническому заданию DentaFlow v2.0 (Multi-Laboratory Dental CRM) для Assignment 5.
 
-**Демо:** https://mentaeeva.github.io/dentaflow/
+**Демо:** https://mentaeeva.github.io/dentalfow/
 
 Прототип показывает полный жизненный цикл заказа: оформление, назначение техников, изготовление, доставка, подтверждение получения, переделка и финансовые расчёты. Всё это в одной системе вместо мессенджеров и таблиц.
 
@@ -16,7 +16,7 @@
   python -m http.server 8000
   ```
   Затем откройте http://localhost:8000.
-- **GitHub Pages:** Settings → Pages → Source: `Deploy from a branch` → ветка `main`, папка `/ (root)`. Через минуту прототип будет доступен по адресу https://mentaeeva.github.io/dentaflow/.
+- **GitHub Pages:** Settings → Pages → Source: `Deploy from a branch` → ветка `main`, папка `/docs`. Через минуту прототип будет доступен по адресу https://mentaeeva.github.io/dentalfow/.
 
 ## Тестовые аккаунты
 
