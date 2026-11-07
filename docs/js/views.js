@@ -214,7 +214,7 @@ function validateForm(F){const e={};
  if(F.labId){const svcs=S.services.filter(s=>s.labId===F.labId&&s.active);
   if(!svcs.length)e.rows=tr('У лаборатории пока нет доступных услуг');
   else if(!F.rows.some(r=>r.serviceId))e.rows=tr('Добавьте хотя бы одну услугу');
-  F.rows.forEach(r=>{if(!r.serviceId&&F.rows.length>1)e['svc-'+r.key]=tr('Выберите услугу или удалите строку');if(r.serviceId&&!(Number(r.qty)>=1))e['qty-'+r.key]=tr('Минимум 1');});}
+  F.rows.forEach(r=>{if(!r.serviceId&&F.rows.length>1)e['svc-'+r.key]=tr('Выберите услугу или удалите строку');if(r.serviceId&&!(Number.isInteger(Number(r.qty))&&Number(r.qty)>=1&&Number(r.qty)<=999))e['qty-'+r.key]=tr('Количество: целое число от 1 до 999');});}
  if(!F.source)e.source=tr('Выберите тип исходных данных');
  if(F.source==='scan'&&!F.files.length)e.files=tr('Для скана прикрепите хотя бы один файл');
  if(F.due&&F.due<=ymd(new Date()))e.due=tr('Дата сдачи должна быть позже сегодняшней');

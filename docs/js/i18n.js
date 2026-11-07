@@ -1515,3 +1515,6 @@ function englishHistoryText(e){
  if(e.type==='payment'&&(m=s.match(/^Оплата переделки №(\d+) для (.*?): (.*)$/)))return 'Payment for remake No. '+m[1]+' for '+m[2]+': '+m[3];
  return s;
 }
+
+Object.assign(KK, {'Количество: целое число от 1 до 999':'Саны: 1-ден 999-ға дейінгі бүтін сан'});
+Object.assign(EN, {'Количество: целое число от 1 до 999':'Quantity: a whole number from 1 to 999'});

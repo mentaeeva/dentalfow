@@ -44,7 +44,7 @@ const A={
  acceptSelected(){const ids=UI.clinic.sel.slice();if(!ids.length)return;openModal({type:'deliveryConfirm',ids,checks:{}},'.modal input[type=checkbox]');},
  acceptOne(el){openModal({type:'deliveryConfirm',ids:[+el.dataset.id],checks:{}},'.modal input[type=checkbox]');},
  delCheck(el){UI.modal.checks[el.dataset.id]=!UI.modal.checks[el.dataset.id];render();},
- deliveryConfirmOk(){const M=UI.modal;const a=actor();let n=0;M.ids.forEach(id=>{const o=orderById(id);if(o&&o.status==='IN_DELIVERY'&&canSee(o)){confirmDelivery(o,a);n++;}});save();
+ deliveryConfirmOk(){const M=UI.modal;if(!M||M.type!=='deliveryConfirm'||!M.ids.length||!M.ids.every(id=>M.checks[id])||!me()||me().role!=='CLINIC')return;const a=actor();let n=0;M.ids.forEach(id=>{const o=orderById(id);if(o&&o.status==='IN_DELIVERY'&&canSee(o)){confirmDelivery(o,a);n++;}});save();
   UI.modal=null;UI.panel=null;Object.assign(UI.clinic,{selectMode:false,sel:[]});if(!S.orders.some(o=>o.clinicId===me().clinicId&&o.status==='IN_DELIVERY'))UI.clinic.status='DELIVERED';render();
   toast(n===1?tr('Получение подтверждено. Заказ перешёл в «Получено».'):tr('Получение подтверждено: ')+n+' '+plural(n,tr('заказ'),tr('заказа'),tr('заказов'))+tr(' в «Получено».'));},
  // order form
@@ -213,6 +213,16 @@ document.addEventListener('submit',e=>{e.preventDefault();const f=e.target.datas
  if(f==='openById'){const id=UI.demoId.trim().replace(/^#/,'');if(!id){UI.focusTarget='#demo-id';render();toast(tr('Введите номер заказа.'),'warn');return;}openOrder(id);}
 });
 document.addEventListener('keydown',e=>{
+ if(e.key==='Tab'){
+  const dialog=document.querySelector(UI.modal?'.modal':UI.panel?'.panel':UI.menuOpen?'.drawer':'[data-no-dialog]');
+  if(dialog){
+   const items=[...dialog.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter(el=>el.getClientRects().length&&el.getAttribute('aria-hidden')!=='true');
+   const first=items[0],last=items[items.length-1],active=document.activeElement;
+   if(!first){e.preventDefault();dialog.setAttribute('tabindex','-1');dialog.focus();}
+   else if(!dialog.contains(active)||(e.shiftKey&&active===first)||(!e.shiftKey&&active===last)){e.preventDefault();(e.shiftKey?last:first).focus();}
+  }
+ }
+
  if(e.key==='Escape'){if(UI.modal){const crit=['cancelAdmin','deliveryConfirm'].includes(UI.modal.type);if(!crit){closeModal();e.preventDefault();}return;}
   if(UI.profileOpen){UI.profileOpen=false;render();return;}if(UI.menuOpen){UI.menuOpen=false;UI.focusTarget='[data-act=menu]';render();return;}if(UI.panel){closePanel();return;}}
  if((e.key==='Enter'||e.key===' ')&&e.target.matches('article[role=button]')){e.preventDefault();e.target.click();}
