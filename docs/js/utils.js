@@ -60,7 +60,7 @@ function fmtShort(iso){const d=new Date(iso);return pad(d.getDate())+'.'+pad(d.g
 const dayOf=iso=>ymd(new Date(iso));
 const inRange=(iso,f,t)=>{const d=dayOf(iso);return(!f||d>=f)&&(!t||d<=t);};
 const fmtRange=(f,t)=>(!f&&!t)?tr('весь период'):((f?tr('с ')+fmtDay(f):'')+(t?(f?' ':'')+tr('по ')+fmtDay(t):''));
-function plural(n,a,b,c){if(LANG==='kk')return tr(a);const m=Math.abs(n)%100,m1=m%10;if(m>10&&m<20)return c;if(m1>1&&m1<5)return b;if(m1===1)return a;return c;}
+function plural(n,a,b,c){if(LANG==='kk')return tr(a);if(LANG==='en')return Math.abs(n)===1?tr(a):tr(c);const m=Math.abs(n)%100,m1=m%10;if(m>10&&m<20)return c;if(m1>1&&m1<5)return b;if(m1===1)return a;return c;}
 const initials=s=>String(s||'').replace(/[«»"]/g,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const clone=o=>JSON.parse(JSON.stringify(o));
 const parseMoney=v=>Number(String(v).replace(/[\s ₸]/g,'').replace(',','.'));
