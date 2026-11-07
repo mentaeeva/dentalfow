@@ -83,3 +83,8 @@ js/app.js         обработчики действий, навигация, �
 - **Все данные вымышленные.**
 
 Для полной версии ТЗ рекомендует React + TypeScript, FastAPI или Node.js, PostgreSQL и Docker.
+
+
+## MVP evidence pack
+
+See [MVP evidence and technical overview](MVP-evidence.html) for scope, MoSCoW priorities, demo credentials, architecture, scenario checks, implemented improvements and outstanding assessment evidence. This is a localStorage prototype: use fictional data only; it does not provide production authentication or shared multi-device storage.

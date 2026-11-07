@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-07",
+  "method": "Automated JavaScript VM checks; role scenarios, not participant research",
+  "locale": {
+    "checks": 40,
+    "renders": 732
+  },
+  "results": [
+    "Reject invalid quantity 0",
+    "Reject invalid quantity -1",
+    "Reject invalid quantity 1.5",
+    "Reject invalid quantity 1000",
+    "Reject invalid quantity Infinity",
+    "Valid clinic form",
+    "S1 Clinic submits order",
+    "S2 Administrator assigns technician",
+    "S3 Assigned technician sees order",
+    "S3 Technician completes work",
+    "S4 Unchecked confirmation cannot change delivery",
+    "S4 Clinic confirms checked delivery",
+    "Repeated confirmation is safe",
+    "S5 Rework keeps previous cycle",
+    "Other clinic cannot see order in UI",
+    "Storage round trip",
+    "User text escaped"
+  ]
+}
