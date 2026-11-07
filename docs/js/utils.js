@@ -45,25 +45,25 @@ const logoMark=()=>`<span class="logo-mark">${ic('tooth',19)}</span>`;
 
 /* ============ Utilities ============ */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money=n=>Math.round(Number(n)||0).toLocaleString('ru-RU').replace(/\s/g,' ')+' ₸';
+const money=n=>Math.round(Number(n)||0).toLocaleString(LANG==='kk'?'kk-KZ':'ru-RU').replace(/\s/g,' ')+' ₸';
 const pad=n=>String(n).padStart(2,'0');
 const MS=['янв.','февр.','мар.','апр.','мая','июн.','июл.','авг.','сент.','окт.','нояб.','дек.'];
 const MF=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const sameDay=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
 function fmtDT(iso){const d=new Date(iso),t=pad(d.getHours())+':'+pad(d.getMinutes()),td=new Date(),y=new Date();y.setDate(td.getDate()-1);
- if(sameDay(d,td))return 'Сегодня · '+t; if(sameDay(d,y))return 'Вчера · '+t;
- return d.getDate()+' '+MS[d.getMonth()]+(d.getFullYear()!==td.getFullYear()?' '+d.getFullYear():'')+' · '+t;}
-function fmtDay(s){if(!s)return '—';const [Y,M,D]=s.split('-').map(Number);return D+' '+MF[M-1]+(Y!==new Date().getFullYear()?' '+Y:'');}
-function fmtFull(iso){const d=new Date(iso);return d.getDate()+' '+MF[d.getMonth()]+' '+d.getFullYear()+', '+pad(d.getHours())+':'+pad(d.getMinutes());}
+ if(sameDay(d,td))return tr('Сегодня · ')+t; if(sameDay(d,y))return tr('Вчера · ')+t;
+ return d.getDate()+' '+tr(MS[d.getMonth()])+(d.getFullYear()!==td.getFullYear()?' '+d.getFullYear():'')+' · '+t;}
+function fmtDay(s){if(!s)return '—';const [Y,M,D]=s.split('-').map(Number);return D+' '+tr(MF[M-1])+(Y!==new Date().getFullYear()?' '+Y:'');}
+function fmtFull(iso){const d=new Date(iso);return d.getDate()+' '+tr(MF[d.getMonth()])+' '+d.getFullYear()+', '+pad(d.getHours())+':'+pad(d.getMinutes());}
 function fmtShort(iso){const d=new Date(iso);return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear();}
 const dayOf=iso=>ymd(new Date(iso));
 const inRange=(iso,f,t)=>{const d=dayOf(iso);return(!f||d>=f)&&(!t||d<=t);};
-const fmtRange=(f,t)=>(!f&&!t)?'весь период':((f?'с '+fmtDay(f):'')+(t?(f?' ':'')+'по '+fmtDay(t):''));
-function plural(n,a,b,c){const m=Math.abs(n)%100,m1=m%10;if(m>10&&m<20)return c;if(m1>1&&m1<5)return b;if(m1===1)return a;return c;}
+const fmtRange=(f,t)=>(!f&&!t)?tr('весь период'):((f?tr('с ')+fmtDay(f):'')+(t?(f?' ':'')+tr('по ')+fmtDay(t):''));
+function plural(n,a,b,c){if(LANG==='kk')return tr(a);const m=Math.abs(n)%100,m1=m%10;if(m>10&&m<20)return c;if(m1>1&&m1<5)return b;if(m1===1)return a;return c;}
 const initials=s=>String(s||'').replace(/[«»"]/g,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const clone=o=>JSON.parse(JSON.stringify(o));
 const parseMoney=v=>Number(String(v).replace(/[\s ₸]/g,'').replace(',','.'));
-const fsize=b=>b>=1048576?(b/1048576).toFixed(1).replace('.',',')+' МБ':Math.max(1,Math.round(b/1024))+' КБ';
+const fsize=b=>b>=1048576?(b/1048576).toFixed(1).replace('.',',')+tr(' МБ'):Math.max(1,Math.round(b/1024))+tr(' КБ');
 /* 10 working days, Sunday excluded, Saturday counts; counting starts from the next calendar day (ТЗ §4.7) */
 function addWorkDays(fromIso,n){const d=new Date(fromIso);d.setHours(12,0,0,0);let c=0;while(c<n){d.setDate(d.getDate()+1);if(d.getDay()!==0)c++;}return ymd(d);}

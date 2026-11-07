@@ -6,7 +6,7 @@ const LS_KEY='dentaflow-demo-v2';
 let CLOCK=null; const now=()=>CLOCK||new Date().toISOString();
 let S=null;
 let saveWarned=false;
-function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));return true;}catch(e){if(!saveWarned){saveWarned=true;toast('Браузер не дал сохранить данные. Изменения останутся до закрытия вкладки.','warn');}return false;}}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));return true;}catch(e){if(!saveWarned){saveWarned=true;toast(tr('Браузер не дал сохранить данные. Изменения останутся до закрытия вкладки.'),'warn');}return false;}}
 function load(){try{const r=localStorage.getItem(LS_KEY);if(r){const p=JSON.parse(r);if(p&&p.v===2&&Array.isArray(p.orders))return p;}}catch(e){}return null;}
 
 const labById=id=>S.labs.find(l=>l.id===id);
@@ -31,7 +31,7 @@ const ST={
  DELIVERED:{clinic:'Получено',admin:'Доставлено',cls:'s-delivered'},
  CANCELLED:{clinic:'Отменён',admin:'Удалено',cls:'s-cancelled'}
 };
-const statusBadge=(o,role)=>`<span class="badge ${ST[o.status].cls}">${role==='CLINIC'?ST[o.status].clinic:ST[o.status].admin}</span>`;
+const statusBadge=(o,role)=>`<span class="badge ${ST[o.status].cls}">${tr(role==='CLINIC'?ST[o.status].clinic:ST[o.status].admin)}</span>`;
 
 /* ============ Domain actions (shared by UI and seed) ============ */
 function hist(o,type,a,text,extra){o.history.push(Object.assign({at:now(),type,by:a?a.name:'Система',text:text||''},extra||{}));o.updatedAt=now();}
