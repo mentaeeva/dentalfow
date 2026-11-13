@@ -4,6 +4,8 @@
 
 **Демо:** https://mentaeeva.github.io/dentalfow/
 
+**Общая база и загрузка файлов:** приложение может использовать Supabase Postgres + Storage с GitHub Pages. Инструкция: [SUPABASE_SETUP.md](SUPABASE_SETUP.md). Пока `docs/js/backend-config.js` не заполнен, работает локальный демо-режим.
+
 Прототип показывает полный жизненный цикл заказа: оформление, назначение техников, изготовление, доставка, подтверждение получения, переделка и финансовые расчёты. Всё это в одной системе вместо мессенджеров и таблиц.
 
 ## Запуск
@@ -61,14 +63,17 @@
 index.html        разметка и подключение файлов
 css/styles.css    стили: палитра и размеры из раздела 2.3 ТЗ
 js/utils.js       иконки, форматирование дат и сумм, расчёт срока сдачи
-js/store.js       хранилище и доменные действия (заказ, назначение, доставка, переделка…)
+js/store.js       локальное хранилище и доменные действия (заказ, назначение, доставка, переделка…)
+js/cloud.js       синхронизация снимка приложения и файлов через Supabase
+js/backend-config.js URL проекта Supabase и публичный anon/publishable key
+supabase/schema.sql схема таблицы, Storage и политики для демо
 js/seed.js        демонстрационные данные
 js/views.js       отрисовка всех экранов и модальных окон
 js/app.js         обработчики действий, навигация, запуск
 ```
 
 Подход:
-- **Данные** лежат в одном объекте и сохраняются в `localStorage`, поэтому заказ, созданный клиникой, виден администратору после перевхода.
+- **Данные** лежат в одном объекте; `localStorage` даёт локальный режим и копию браузера, а настроенный Supabase синхронизирует общий снимок через PostgreSQL.
 - **Состояние меняют только функции из `store.js`.** Каждая сама записывает событие в историю заказа.
 - **Интерфейс перерисовывается целиком** из текущего состояния (функция `view()`).
 
@@ -76,9 +81,9 @@ js/app.js         обработчики действий, навигация, �
 
 Это учебный прототип, а не production-система (раздел 17 ТЗ):
 
-- **Данные хранятся в браузере** каждого пользователя. Общей базы и сервера нет.
-- **Права доступа проверяются на клиенте.** В реальной системе проверка `laboratory_id` должна выполняться на сервере.
-- **Файлы не загружаются**, сохраняются только их имена.
+- **Supabase подключается отдельно.** Создание проекта и заполнение `backend-config.js` нужны для общей БД и постоянных файлов.
+- **Текущие политики Supabase открыты для демонстрации.** Любой посетитель может читать и менять состояние и файлы; демо-логины не обеспечивают безопасность.
+- **Не загружайте реальные данные пациентов.** Для production нужны реальная аутентификация, серверная изоляция клиник и лабораторий и приватные файлы.
 - **Экспорт в PDF** запланирован для полной версии.
 - **Все данные вымышленные.**
 
@@ -87,4 +92,4 @@ js/app.js         обработчики действий, навигация, �
 
 ## MVP evidence pack
 
-See [MVP evidence and technical overview](MVP-evidence.html) for scope, MoSCoW priorities, demo credentials, architecture, scenario checks, implemented improvements and outstanding assessment evidence. This is a localStorage prototype: use fictional data only; it does not provide production authentication or shared multi-device storage.
+See [MVP evidence and technical overview](MVP-evidence.html) for scope, MoSCoW priorities, demo credentials, architecture, scenario checks, implemented improvements and outstanding assessment evidence. Use fictional data only; the demo login and shared Supabase policies do not provide production authentication or access control.
