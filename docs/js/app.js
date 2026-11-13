@@ -146,7 +146,9 @@ function doSubmit(useDefault){const F=UI.form;const a=actor();
  const due=useDefault?UI.modal.date:F.due;let o;
  if(F.editId){o=orderById(F.editId);
   if(!o||o.status!=='RECEIVED'){UI.modal=null;render();toast(tr('Пока вы редактировали, лаборатория взяла заказ в работу. Изменения не сохранены — свяжитесь с администратором.'),'err');return;}
+  const removedFiles=o.files.filter(x=>x.path&&!F.files.some(y=>y.path===x.path));
   const ch=editOrder(o,{patient:F.patient.trim(),items:merged,source:F.source,files:F.files,comment:F.comment.trim(),due,dueDefault:useDefault},a);
+  if(removedFiles.length&&window.DentaFlowCloud)Promise.allSettled(removedFiles.map(x=>window.DentaFlowCloud.remove(x.path)));
   toast(ch.length?tr('Изменения в заказе #')+o.id+tr(' сохранены.'):tr('Изменений нет.'));}
  else{let clinicId;
   if(F.mode==='admin'){const nm=F.clinicName.trim();let c=S.clinics.find(x=>x.oneOff&&x.labIds.includes(F.labId)&&x.name.toLowerCase()===nm.toLowerCase());
@@ -160,15 +162,16 @@ function doSubmit(useDefault){const F=UI.form;const a=actor();
 
 /* ============ Change handlers (selects with side effects, files) ============ */
 const ALLOWED=['stl','ply','obj','dcm','zip','jpg','jpeg','png','pdf'];
-function addFiles(list){const F=UI.form;const bad=[];[...list].forEach(f=>{const ext=(f.name.split('.').pop()||'').toLowerCase();
-  if(!ALLOWED.includes(ext)){bad.push(f.name+tr(': неподдерживаемый формат'));return;}if(f.size>50*1048576){bad.push(f.name+tr(': больше 50 МБ'));return;}
-  if(F.files.some(x=>x.name===f.name&&x.size===f.size))return;F.files.push({name:f.name,size:f.size});});
+async function addFiles(list){const F=UI.form;const bad=[];for(const f of [...list]){const ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(!ALLOWED.includes(ext)){bad.push(f.name+tr(': неподдерживаемый формат'));continue;}if(f.size>50*1048576){bad.push(f.name+tr(': больше 50 МБ'));continue;}
+  if(F.files.some(x=>x.name===f.name&&x.size===f.size))continue;
+  try{const file=window.DentaFlowCloud?await window.DentaFlowCloud.upload(f):null;F.files.push(file||{name:f.name,size:f.size});}
+  catch(e){bad.push(f.name+tr(': загрузка не удалась'));}}
  revalidate();render();if(bad.length)toast(tr('Не добавлено: ')+bad.join('; ')+'.','err');}
-function setEvidence(f){if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
+async function setEvidence(f){if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
  if(!['jpg','jpeg','png','pdf','webp','heic'].includes(ext)){toast(tr('Нужен скриншот или фото (JPG, PNG) либо PDF.'),'err');return;}
  if(f.size>10*1048576){toast(tr('Файл больше 10 МБ. Сожмите скриншот и попробуйте снова.'),'err');return;}
- const M=UI.modal;if(f.type.startsWith('image/')&&f.size<1.5*1048576){const r=new FileReader();r.onload=()=>{M.file={name:f.name,size:f.size,data:r.result};render();};r.onerror=()=>{M.file={name:f.name,size:f.size,data:null};render();};r.readAsDataURL(f);}
- else{M.file={name:f.name,size:f.size,data:null};render();}}
+ const M=UI.modal;try{const uploaded=window.DentaFlowCloud?await window.DentaFlowCloud.upload(f):null;M.file=Object.assign({name:f.name,size:f.size,data:null},uploaded||{});if(!uploaded&&f.type.startsWith('image/')&&f.size<1.5*1048576){const r=new FileReader();r.onload=()=>{M.file.data=r.result;render();};r.onerror=()=>render();r.readAsDataURL(f);return;}render();}catch(e){toast(tr('Не удалось загрузить файл. Проверьте подключение и настройки хранилища.'),'err');}}
 const C={
  language(el){setLanguage(el.value);},
  labPick(el){const F=UI.form;const to=el.value;if(!to||to===F.labId){if(!to&&!F.rows.some(r=>r.serviceId)){F.labId=null;revalidate();}render();return;}
@@ -235,6 +238,5 @@ window.addEventListener('offline',()=>toast(tr('Нет подключения к
 window.addEventListener('storage',e=>{if(e.key===LS_KEY&&e.newValue){const p=load();if(p){S=p;if(!me()){UI=freshUI();}render();}}});
 
 /* ============ Boot ============ */
-S=load();if(!S){seed();save();}
-if(me())goHome();
-render();
+async function boot(){S=load();if(!S){seed();save();}await window.DentaFlowCloud.start();if(me())goHome();render();}
+boot();

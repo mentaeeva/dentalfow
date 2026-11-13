@@ -6,7 +6,7 @@ const LS_KEY='dentaflow-demo-v2';
 let CLOCK=null; const now=()=>CLOCK||new Date().toISOString();
 let S=null;
 let saveWarned=false;
-function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));return true;}catch(e){if(!saveWarned){saveWarned=true;toast(tr('Браузер не дал сохранить данные. Изменения останутся до закрытия вкладки.'),'warn');}return false;}}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));if(window.DentaFlowCloud)window.DentaFlowCloud.save(S);return true;}catch(e){if(!saveWarned){saveWarned=true;toast(tr('Браузер не дал сохранить данные. Изменения останутся до закрытия вкладки.'),'warn');}return false;}}
 function load(){try{const r=localStorage.getItem(LS_KEY);if(r){const p=JSON.parse(r);if(p&&p.v===2&&Array.isArray(p.orders))return p;}}catch(e){}return null;}
 
 const labById=id=>S.labs.find(l=>l.id===id);
