@@ -174,6 +174,15 @@ async function setEvidence(f){if(!f)return;const ext=(f.name.split('.').pop()||'
  const M=UI.modal;try{const uploaded=window.DentaFlowCloud?await window.DentaFlowCloud.upload(f):null;M.file=Object.assign({name:f.name,size:f.size,data:null},uploaded||{});if(!uploaded&&f.type.startsWith('image/')&&f.size<1.5*1048576){const r=new FileReader();r.onload=()=>{M.file.data=r.result;render();};r.onerror=()=>render();r.readAsDataURL(f);return;}render();}catch(e){toast(tr('Не удалось загрузить файл. Проверьте подключение и настройки хранилища.'),'err');}}
 const C={
  language(el){setLanguage(el.value);},
+ analyticsPeriod(el){
+  const range=DentaFlowAnalytics.range(UI.analytics,S.orders.filter(o=>o.labId===me().labId),now());
+  UI.analytics={preset:el.value,from:range.from,to:range.to};render();
+ },
+ analyticsDate(el){
+  const range=DentaFlowAnalytics.range(UI.analytics,S.orders.filter(o=>o.labId===me().labId),now());
+  UI.analytics={preset:'custom',from:range.from,to:range.to};
+  UI.analytics[el.dataset.bound]=el.value;render();
+ },
  labPick(el){const F=UI.form;const to=el.value;if(!to||to===F.labId){if(!to&&!F.rows.some(r=>r.serviceId)){F.labId=null;revalidate();}render();return;}
   if(F.labId&&F.rows.some(r=>r.serviceId)){el.value=F.labId;openModal({type:'labSwitch',to});return;}
   F.labId=to;F.rows=F.rows.map(r=>({key:r.key,serviceId:'',qty:r.qty,price:0}));revalidate();UI.focusTarget='#f-patient';render();},

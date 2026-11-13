@@ -8,6 +8,7 @@ const freshUI=()=>({route:'login',menuOpen:false,profileOpen:false,modal:null,mo
  clinic:{q:'',lab:'all',status:'all',from:'',to:'',sort:'new',selectMode:false,sel:[]},
  admin:{tab:'RECEIVED',q:'',from:'',to:'',selectMode:false,sel:[]},
  tech:{tab:'progress',q:'',from:'',to:''},
+ analytics:{preset:'30',from:'',to:''},
  form:null,
  prices:{target:'base',draft:{},errs:[],newName:'',newPrice:''},
  rates:{techId:null,draft:{},errs:[]},
@@ -499,8 +500,7 @@ function paperHTML(p){const u=me();const lab=labById(u.labId);const gen=fmtFull(
  <p class="paper-note">${tr("Суммы рассчитаны по ставкам, зафиксированным в момент завершения работы.")}</p>`;}
 
 /* ============ Analytics & accounts ============ */
-function vAnalytics(){const lab=labById(me().labId);const os=S.orders.filter(o=>o.labId===lab.id);
- return `<div class="page-head"><div><h1>${tr("Аналитика")}</h1><p class="lead">${esc(laboratoryName(lab))}</p></div></div><div class="panel-card placeholder"><span class="empty-ic">${ic('chart',26)}</span><h3 style="font-size:18px">${tr("Раздел в разработке")}</h3><p class="muted">${tr("Сейчас в лаборатории ")}${os.length} ${plural(os.length,tr('заказ'),tr('заказа'),tr('заказов'))}${tr(", из них переделок: ")}${os.filter(o=>o.cycles.length>1).length}${tr(". В следующих версиях здесь появятся:")}</p><ul><li>${tr("Количество заказов по периодам")}</li><li>${tr("Выручка по клиникам")}</li><li>${tr("Загрузка техников")}</li><li>${tr("Сроки выполнения")}</li><li>${tr("Доля переделок")}</li><li>${tr("Причины переделок")}</li><li>${tr("Статистика по услугам")}</li></ul></div>`;}
+function vAnalytics(){return analyticsDashboard();}
 function vAccounts(){const lab=labById(me().labId);const partners=S.clinics.filter(c=>!c.oneOff&&c.labIds.includes(lab.id));const oneoffs=S.clinics.filter(c=>c.oneOff&&c.labIds.includes(lab.id));const techs=S.techs.filter(t=>t.labId===lab.id);
  const login=f=>{const u=S.users.find(f);return u?`<code>${esc(u.login)}</code>`:'<span class="muted">—</span>';};
  return `<div class="page-head"><div><h1>${tr("Аккаунты")}</h1><p class="lead">${tr("Партнёры и сотрудники лаборатории «")}${esc(lab.name)}${tr("». Другие лаборатории здесь не видны.")}</p></div></div>
